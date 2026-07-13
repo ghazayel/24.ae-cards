@@ -23,7 +23,7 @@ const TEMPLATES = {
       { key: "main", x: 0, y: 0, w: 1080, h: 1920, defaultSrc: "assets/story_default_bg.jpg", label: null }
     ],
     text: {
-      x: 104, y: 1330, width: 997 - 104, height: 1669 - 1330,
+      x: 104, y: 1330, width: 997 - 104, height: 1800 - 1330,
       baseFontSize: 66, minFontSize: 30, lineHeight: 1.35,
       color: "#ffffff",
       default: "البيتكوين فقد أكثر من نصف قيمته منذ ذروته العام الماضي مع انسحاب المستثمرين من العملات المشفرة"
@@ -31,7 +31,7 @@ const TEMPLATES = {
     highlight: { color: "#70e6f4", default: "" }
   },
   card70e6f4: {
-    label: "بطاقة – كلمة مميزة (1080×1350)",
+    label: "بطاقة (1080×1350)",
     width: 1080,
     height: 1350,
     overlay: "assets/card70e6f4_overlay.png",
@@ -40,8 +40,8 @@ const TEMPLATES = {
       { key: "main", x: 0, y: 0, w: 1080, h: 1350, defaultSrc: "assets/card70e6f4_default_bg.jpg", label: null }
     ],
     text: {
-      x: 77, y: 928, width: 1003 - 77, height: 1161 - 928,
-      baseFontSize: 49, minFontSize: 26, lineHeight: 1.35,
+      x: 77, y: 928, width: 1003 - 77, height: 1262 - 928,
+      baseFontSize: 65, minFontSize: 26, lineHeight: 1.35,
       color: "#ffffff",
       default: "25% الزيادة المتوقعة في سعر iPhone 18 Pro بسبب أزمة ندرة المكونات الإلكترونية"
     },
