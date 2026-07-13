@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>محرر تصاميم البطاقات - من محمود غزيّل</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app">
+
+  <header class="topbar">
+    <h1>محرر تصاميم البطاقات</h1>
+    <p class="subtitle">اختر تصميمًا، غيّر الصورة والنص، ثم نزّل الصورة الجاهزة</p>
+  </header>
+
+  <div class="workspace">
+
+    <aside class="panel">
+
+      <div class="field">
+        <label for="templateSelect">التصميم</label>
+        <select id="templateSelect"></select>
+      </div>
+
+      <div class="field" id="singleBgGroup">
+        <label for="bgInput">صورة الخلفية</label>
+        <input type="file" id="bgInput" accept="image/*">
+        <p class="hint">اختر صورة من جهازك لاستبدال الخلفية الحالية</p>
+      </div>
+
+      <div class="field" id="zoomField" hidden>
+        <label for="zoomInput">تكبير الصورة</label>
+        <input type="range" id="zoomInput" min="1" max="3" step="0.02" value="1">
+        <p class="hint">اسحب الصورة داخل المعاينة لتحريكها، واستخدم الشريط للتكبير</p>
+        <button type="button" id="resetPosBtn" class="secondary-btn">إعادة الضبط</button>
+      </div>
+
+      <div class="field" id="dualPhotoGroup" hidden>
+        <label>الصورتان</label>
+
+        <div class="photo-slot">
+          <span class="slot-label">الصورة اليسرى</span>
+          <input type="file" id="photo1Input" accept="image/*">
+          <input type="range" id="photo1Zoom" min="1" max="3" step="0.02" value="1">
+          <button type="button" id="photo1Reset" class="secondary-btn small">إعادة الضبط</button>
+        </div>
+
+        <div class="photo-slot">
+          <span class="slot-label">الصورة اليمنى</span>
+          <input type="file" id="photo2Input" accept="image/*">
+          <input type="range" id="photo2Zoom" min="1" max="3" step="0.02" value="1">
+          <button type="button" id="photo2Reset" class="secondary-btn small">إعادة الضبط</button>
+        </div>
+
+        <p class="hint">اسحب كل صورة داخل مربعها لتحريكها، واستخدم الشريط لتكبيرها</p>
+      </div>
+
+      <div class="field">
+        <label for="textInput">النص الرئيسي</label>
+        <textarea id="textInput" rows="5"></textarea>
+      </div>
+
+      <div class="field" id="highlightField" hidden>
+        <label for="highlightInput">الجزء المميز (اختياري)</label>
+        <input type="text" id="highlightInput" placeholder="مثال: 25%">
+        <p class="hint">اكتب هنا الكلمة أو الرقم الذي تريد تلوينه باللون الأزرق (70e6f4#) — يمكن أن يكون في بداية النص أو وسطه أو نهايته</p>
+      </div>
+
+      <button id="downloadBtn" class="primary-btn">تنزيل الصورة</button>
+
+      <p class="status" id="statusMsg"></p>
+
+    </aside>
+
+    <main class="preview">
+      <canvas id="designCanvas"></canvas>
+    </main>
+
+  </div>
+
+  <div class="credit">
+    القالب من تصميم <a href="https://instagram.com/ghazayel" target="_blank" rel="noopener">محمود غزيّل</a>
+  </div>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
