@@ -37,7 +37,7 @@ const TEMPLATES = {
     overlay: "assets/card70e6f4_overlay.png",
     blendLayers: [],
     slots: [
-      { key: "main", x: 0, y: 0, w: 1080, h: 1350, defaultSrc: "assets/card70e6f4_default_bg.jpg", label: null }
+      { key: "main", x: 0, y: 0, w: 1080, h: 928, defaultSrc: "assets/card70e6f4_default_bg.jpg", label: null }
     ],
     text: {
       x: 77, y: 928, width: 1003 - 77, height: 1262 - 928,
@@ -269,7 +269,11 @@ async function render() {
   }
 
   // 4. Headline text
-  const rawText = textInput.value.trim();
+  // Strip invisible bidi control characters (LRM/RLM/embedding/isolate marks)
+  // that some keyboards/OSes silently insert around numbers in RTL text —
+  // left in place, they silently break exact-text highlight matching.
+  const BIDI_MARKS = /[\u200E\u200F\u202A-\u202E\u2066-\u2069]/g;
+  const rawText = textInput.value.trim().replace(BIDI_MARKS, "");
   if (rawText) {
     const box = { x: tpl.text.x, y: tpl.text.y, width: tpl.text.width, height: tpl.text.height };
     const { fontSize, lines } = fitText(ctx, rawText, box, tpl.text.baseFontSize, tpl.text.minFontSize, tpl.text.lineHeight);
@@ -281,21 +285,43 @@ async function render() {
 
     const rightX = box.x + box.width;
     const lineStep = fontSize * tpl.text.lineHeight;
-    const highlightWord = tpl.highlight ? highlightInput.value.trim() : "";
+    const highlightWord = tpl.highlight ? highlightInput.value.trim().replace(BIDI_MARKS, "") : "";
 
+    // Find the highlight phrase against the full (normalized) wrapped text so
+    // matches that straddle a line break are still found — not just matches
+    // that happen to land entirely within a single line.
+    let matchStart = -1;
+    let matchEnd = -1;
+    if (highlightWord) {
+      const normalizedText = lines.join(" ");
+      const idx = normalizedText.indexOf(highlightWord);
+      if (idx !== -1) {
+        matchStart = idx;
+        matchEnd = idx + highlightWord.length;
+      }
+    }
+
+    let cursor = 0; // running character offset into the normalized joined text
     lines.forEach((line, i) => {
       const y = box.y + i * lineStep;
+      const lineStart = cursor;
+      const lineEnd = lineStart + line.length;
+      cursor = lineEnd + 1; // +1 for the single space that joins this line to the next
 
       // Base line in the default color
       ctx.fillStyle = tpl.text.color;
       ctx.fillText(line, rightX, y);
 
-      // Optional highlighted word/phrase — can appear anywhere in the line
-      if (highlightWord) {
-        const idx = line.indexOf(highlightWord);
-        if (idx !== -1) {
-          const before = line.slice(0, idx);
-          const match = line.slice(idx, idx + highlightWord.length);
+      // Portion (if any) of the highlighted phrase that falls on this line —
+      // handles phrases that span two or more wrapped lines too.
+      if (matchStart !== -1) {
+        const overlapStart = Math.max(matchStart, lineStart);
+        const overlapEnd = Math.min(matchEnd, lineEnd);
+        if (overlapStart < overlapEnd) {
+          const localStart = overlapStart - lineStart;
+          const localEnd = overlapEnd - lineStart;
+          const before = line.slice(0, localStart);
+          const match = line.slice(localStart, localEnd);
           const beforeWidth = ctx.measureText(before).width;
           const matchAnchorX = rightX - beforeWidth;
 

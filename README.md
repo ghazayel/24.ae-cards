@@ -21,7 +21,8 @@ font, colors, and text-box geometry all faithfully reproduced with an HTML
 - **Drag, zoom & reset** any photo directly on the live preview.
 - **Live headline editing** with automatic word-wrap and font-size shrink-to-fit.
 - **Optional colored highlight** for any word or number in the headline —
-  matches wherever it appears (start, middle, or end).
+  matches wherever it appears (start, middle, or end), even if it happens to
+  span across two wrapped lines.
 - **One-click PNG export** at full design resolution.
 - **No backend, no build step, no dependencies** — pure HTML/CSS/JS. Works
   fully offline once loaded, and the whole app is under 2 MB.
@@ -87,7 +88,10 @@ webapp/
 Everything renders on an HTML `<canvas>` in this order:
 
 1. **Photo slot(s)** — the uploaded (or default) photo, cover-fit and
-   clipped to its slot, with pan/zoom applied.
+   clipped to its slot, with pan/zoom applied. Each slot only spans the area
+   where the photo is actually visible behind the overlay (e.g. in
+   **بطاقة** the slot stops well above the text card, not at the
+   bottom of the canvas), so zooming/panning isn't wasted on hidden area.
 2. **Blend-mode layers** *(Story template only)* — a couple of design
    elements use Photoshop's Multiply/Color Dodge blend modes instead of plain
    transparency. These are drawn with the browser's native
