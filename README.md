@@ -33,7 +33,7 @@ font, colors, and text-box geometry all faithfully reproduced with an HTML
 | Template | Canvas size | What's editable |
 |---|---|---|
 | **ستوري** | 1080 × 1920 | Background photo (drag/zoom), headline, optional highlight |
-| **بطاقة – كلمة مميزة** | 1080 × 1350 | Background photo (drag/zoom), headline, optional highlight |
+| **بطاقة** | 1080 × 1350 | Background photo (drag/zoom), headline, optional highlight |
 | **اتصالات** | 1080 × 1350 | Two independent photo slots (drag/zoom each), headline, optional highlight — background stays fixed |
 
 ## 🚀 Quick start (local)
