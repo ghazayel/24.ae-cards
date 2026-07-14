@@ -61,6 +61,43 @@ browsers' restrictions on `fetch`-ing local image/font files).
 4. Deploy — you'll get a `*.pages.dev` URL. Connecting to Git means every
    future `git push` auto-deploys.
 
+## 🔍 SEO & social link previews
+
+`index.html` already includes a description, Open Graph tags, a Twitter/X
+Card, and JSON-LD structured data (crediting the designer via schema.org,
+separate from the small on-page corner badge) — so sharing the link on
+Facebook, WhatsApp, LinkedIn, or X shows a title, description, and preview
+image automatically.
+
+Once you know the site's real deployed URL (GitHub Pages / Cloudflare Pages /
+custom domain), open `index.html` and fill in the two commented-out lines
+with it:
+
+```html
+<link rel="canonical" href="https://your-deployed-domain/">
+<meta property="og:url" content="https://your-deployed-domain/">
+```
+
+Some platforms (Facebook in particular) also want the `og:image` /
+`twitter:image` values as a full absolute URL rather than a relative path —
+if the preview image doesn't show up when you test a share, change:
+
+```html
+<meta property="og:image" content="docs/preview.jpg">
+<meta name="twitter:image" content="docs/preview.jpg">
+```
+
+to:
+
+```html
+<meta property="og:image" content="https://your-deployed-domain/docs/preview.jpg">
+<meta name="twitter:image" content="https://your-deployed-domain/docs/preview.jpg">
+```
+
+You can test how a link will preview using
+[Facebook's Sharing Debugger](https://developers.facebook.com/tools/debug/)
+or [X's Card Validator](https://cards-dev.twitter.com/validator) once it's live.
+
 ## 📦 Project structure
 
 ```

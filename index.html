@@ -4,6 +4,83 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>محرر تصاميم البطاقات - من محمود غزيّل</title>
+
+<!-- ===== Auto hard-refresh: makes sure visitors always get the latest
+     deployed version, even if the browser or a CDN is holding a stale
+     cached copy. Runs as early as possible, before other assets load. ===== -->
+<script>
+(function () {
+  var ONE_DAY_MS = 24 * 60 * 60 * 1000;
+
+  function checkAndRefresh() {
+    var now = Date.now();
+    var last = parseInt(localStorage.getItem("last_hard_refresh"), 10);
+
+    if (!last || now - last > ONE_DAY_MS) {
+      localStorage.setItem("last_hard_refresh", String(now));
+
+      var url = new URL(window.location.href);
+      url.searchParams.set("cache_bust", String(now));
+      window.location.replace(url.toString());
+    }
+  }
+
+  checkAndRefresh();
+  // Also re-check periodically in case a tab is left open past 24 hours
+  // without ever triggering a fresh page load.
+  setInterval(checkAndRefresh, 30 * 60 * 1000);
+})();
+</script>
+
+<!-- ===== Core SEO ===== -->
+<meta name="description" content="أداة مجانية لتحرير تصاميم البطاقات الإخبارية على المتصفح مباشرة — غيّر الصورة والنص لكل قالب ثم حمّل الصورة جاهزة للنشر، دون الحاجة لبرنامج فوتوشوب.">
+<meta name="author" content="Mahmoud Ghazayel">
+<link rel="author" href="https://www.facebook.com/ghazayel/">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#2563eb">
+<!-- Set this to the site's real deployed address once you know it (GitHub
+     Pages / Cloudflare Pages URL) — needed for canonical + absolute OG/Twitter
+     image URLs below to resolve correctly in link previews. -->
+<!-- <link rel="canonical" href="https://your-deployed-domain/"> -->
+
+<!-- ===== Open Graph (Facebook, LinkedIn, WhatsApp, etc.) ===== -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="محرر تصاميم البطاقات">
+<meta property="og:title" content="محرر تصاميم البطاقات - من محمود غزيّل">
+<meta property="og:description" content="أداة مجانية لتحرير تصاميم البطاقات الإخبارية على المتصفح مباشرة — غيّر الصورة والنص لكل قالب ثم حمّل الصورة جاهزة للنشر، دون الحاجة لبرنامج فوتوشوب.">
+<meta property="og:image" content="docs/preview.jpg">
+<meta property="og:locale" content="ar_AR">
+<!-- <meta property="og:url" content="https://your-deployed-domain/"> -->
+
+<!-- ===== Twitter / X Card ===== -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="محرر تصاميم البطاقات - من محمود غزيّل">
+<meta name="twitter:description" content="أداة مجانية لتحرير تصاميم البطاقات الإخبارية على المتصفح مباشرة — غيّر الصورة والنص لكل قالب ثم حمّل الصورة جاهزة للنشر.">
+<meta name="twitter:image" content="docs/preview.jpg">
+
+<!-- ===== Structured data (credits the designer via schema.org, separate
+     from the on-page corner badge) ===== -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "محرر تصاميم البطاقات",
+  "alternateName": "Card Design Editor",
+  "description": "أداة مجانية لتحرير تصاميم البطاقات الإخبارية على المتصفح مباشرة دون الحاجة لبرنامج فوتوشوب.",
+  "applicationCategory": "DesignApplication",
+  "operatingSystem": "Any (runs in any modern web browser)",
+  "author": {
+    "@type": "Person",
+    "name": "Mahmoud Ghazayel",
+    "alternateName": "محمود غزيّل",
+    "sameAs": [
+      "https://www.facebook.com/ghazayel/",
+      "https://www.instagram.com/ghazayel/reels/"
+    ]
+  }
+}
+</script>
+
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -64,7 +141,7 @@
 
       <div class="field" id="highlightField" hidden>
         <label for="highlightInput">الجزء المميز (اختياري)</label>
-        <input type="text" id="highlightInput" placeholder="مثال: 25%">
+        <input type="text" id="highlightInput" dir="ltr" placeholder="مثال: 25%">
         <p class="hint">اكتب هنا الكلمة أو الرقم الذي تريد تلوينه باللون الأزرق (70e6f4#) — يمكن أن يكون في بداية النص أو وسطه أو نهايته</p>
       </div>
 
