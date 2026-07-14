@@ -325,9 +325,19 @@ async function render() {
           const beforeWidth = ctx.measureText(before).width;
           const matchAnchorX = rightX - beforeWidth;
 
+          // A highlighted segment with no Arabic letters (e.g. a lone "25%")
+          // has nothing to anchor its reading order, and some browsers'
+          // canvas text shaping visually reverses it when drawn in isolation
+          // under direction="rtl" — even though the exact same text renders
+          // correctly as part of the full line above. Switching direction to
+          // "ltr" just for this draw call fixes the ordering while textAlign
+          // "right" keeps it anchored at the same spot.
+          const hasArabic = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/.test(match);
+          ctx.direction = hasArabic ? "rtl" : "ltr";
           ctx.fillStyle = tpl.highlight.color;
           ctx.fillText(match, matchAnchorX, y);
           ctx.fillStyle = tpl.text.color;
+          ctx.direction = "rtl";
         }
       }
     });
