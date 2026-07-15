@@ -1,4 +1,12 @@
 // ---------------------------------------------------------------------------
+// App version — bump this on every deploy. Shown as a small, subtle tag in
+// the bottom-right corner of the page so you can tell at a glance which
+// build is currently live (pairs well with the auto hard-refresh in
+// index.html, in case a visitor's browser/CDN is holding a stale copy).
+// ---------------------------------------------------------------------------
+const APP_VERSION = "2.0.3";
+
+// ---------------------------------------------------------------------------
 // Template definitions
 // Coordinates below come directly from the original PSD layer bounding boxes,
 // so the live preview lines up with the original designs.
@@ -20,7 +28,7 @@ const TEMPLATES = {
       { src: "assets/story_dodge2.png", mode: "color-dodge", alpha: 0.2314 }
     ],
     slots: [
-      { key: "main", x: 0, y: 0, w: 1080, h: 1920, defaultSrc: "assets/story_default_bg.jpg", label: null }
+      { key: "main", x: 0, y: 0, w: 1080, h: 1330, defaultSrc: "assets/story_default_bg.jpg", label: null }
     ],
     text: {
       x: 104, y: 1330, width: 997 - 104, height: 1800 - 1330,
@@ -564,6 +572,9 @@ downloadBtn.addEventListener("click", () => {
     templateSelect.appendChild(opt);
   }
   templateSelect.value = currentKey;
+
+  const versionTag = document.getElementById("versionTag");
+  if (versionTag) versionTag.textContent = `v${APP_VERSION}`;
 
   statusMsg.textContent = "جارٍ تحميل الخط...";
 

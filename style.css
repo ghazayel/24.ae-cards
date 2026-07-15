@@ -244,6 +244,20 @@ input[type="range"] {
   text-decoration: underline;
 }
 
+/* Deliberately understated — just enough to be readable if you go looking
+   for it, not something that draws the eye during normal use. */
+.version-tag {
+  position: fixed;
+  right: 14px;
+  bottom: 14px;
+  font-size: 10px;
+  color: rgba(107, 114, 128, 0.45);
+  letter-spacing: 0.02em;
+  z-index: 10;
+  pointer-events: none;
+  user-select: none;
+}
+
 @media (max-width: 720px) {
   .credit {
     position: static;

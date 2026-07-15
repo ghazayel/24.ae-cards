@@ -127,8 +127,9 @@ Everything renders on an HTML `<canvas>` in this order:
 1. **Photo slot(s)** — the uploaded (or default) photo, cover-fit and
    clipped to its slot, with pan/zoom applied. Each slot only spans the area
    where the photo is actually visible behind the overlay (e.g. in
-   **بطاقة** the slot stops well above the text card, not at the
-   bottom of the canvas), so zooming/panning isn't wasted on hidden area.
+   **ستوري** and **بطاقة** the slot stops where the headline card begins,
+   not at the bottom of the canvas), so zooming/panning isn't wasted on
+   hidden area.
 2. **Blend-mode layers** *(Story template only)* — a couple of design
    elements use Photoshop's Multiply/Color Dodge blend modes instead of plain
    transparency. These are drawn with the browser's native
@@ -174,6 +175,15 @@ Everything happens client-side in the browser. No image, text, or font ever
 gets uploaded to a server — the "download" button just saves the canvas
 straight to the person's device.
 
+## 🏷️ Versioning
+
+There's a small, deliberately subtle version tag in the bottom-right corner
+of the page (e.g. `v1.0.0`), driven by the `APP_VERSION` constant at the top
+of `script.js`. Bump it on every deploy so you can glance at the live site
+and confirm which build is actually running — handy together with the auto
+hard-refresh script in `index.html`, which forces visitors' browsers to fetch
+a fresh copy at least once every 24 hours.
+
 ## Credits
 
-Design by [محمود غزيّل](https://instagram.com/ghazayel).
+Design by [محمود غزيّل](https://www.instagram.com/ghazayel/reels/).
