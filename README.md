@@ -125,14 +125,20 @@ webapp/
 Everything renders on an HTML `<canvas>` in this order:
 
 1. **Photo slot(s)** — the uploaded (or default) photo, cover-fit and
-   clipped to its slot, with pan/zoom applied. In **بطاقة**, the slot stops
-   where the headline card begins rather than the bottom of the canvas,
-   since the photo is already fully hidden by then — no need to
-   zoom/pan into area that will never show. **ستوري** and **اتصالات**
-   need the full slot size they're given: ستوري's fade is done with real
-   blend modes (see below) that require actual photo pixels the whole way
-   down to blend against correctly, and اتصالات's two slots are already
-   sized to exactly match their visible square.
+   clipped to its slot, with pan/zoom applied. In **بطاقة**, the slot's
+   render area itself stops where the headline card begins, since the photo
+   is fully hidden by then. **ستوري** is more subtle: it still *renders* the
+   photo across the full canvas, because its fade relies on real Multiply/
+   Color-Dodge blend modes (see below) that need actual photo pixels the
+   whole way down — clipping the photo short there makes those blend layers
+   paint their own raw color with nothing to blend against, which looks like
+   a black band. Instead, ستوري's slot has a `coverH` override: the *zoom/pan
+   reference* is calibrated to just the visible area above the headline
+   (where the overlay is already ~100% opaque below that point regardless),
+   so a photo isn't forced into a tighter default zoom than the visible
+   region actually needs — while the photo itself still physically extends
+   the full height underneath. **اتصالات**'s two slots are already sized to
+   exactly match their visible squares, so neither trick is needed there.
 2. **Blend-mode layers** *(Story template only)* — a couple of design
    elements use Photoshop's Multiply/Color Dodge blend modes instead of plain
    transparency. These are drawn with the browser's native

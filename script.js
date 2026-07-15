@@ -4,7 +4,7 @@
 // build is currently live (pairs well with the auto hard-refresh in
 // index.html, in case a visitor's browser/CDN is holding a stale copy).
 // ---------------------------------------------------------------------------
-const APP_VERSION = "2.0.4";
+const APP_VERSION = "2.0.5";
 
 // ---------------------------------------------------------------------------
 // Template definitions
@@ -28,7 +28,16 @@ const TEMPLATES = {
       { src: "assets/story_dodge2.png", mode: "color-dodge", alpha: 0.2314 }
     ],
     slots: [
-      { key: "main", x: 0, y: 0, w: 1080, h: 1920, defaultSrc: "assets/story_default_bg.jpg", label: null }
+      // h stays the full canvas (1920) so the photo always has real pixels
+      // for the Multiply/Color-Dodge fade below to blend against — clipping
+      // it short causes those blend layers to paint their own raw color
+      // where there's no backdrop, which looks like a black band. coverH is
+      // just the reference used for the *default zoom/pan framing*: below
+      // that point the overlay is already ~100% opaque, so it's invisible
+      // regardless of what the photo does there, and cropping the framing
+      // reference there avoids forcing an unnecessarily tight zoom just to
+      // reach pixels nobody will ever see.
+      { key: "main", x: 0, y: 0, w: 1080, h: 1920, coverH: 1450, defaultSrc: "assets/story_default_bg.jpg", label: null }
     ],
     text: {
       x: 104, y: 1330, width: 997 - 104, height: 1800 - 1330,
@@ -135,21 +144,47 @@ function baseCoverScale(img, boxW, boxH) {
   return Math.max(boxW / img.width, boxH / img.height);
 }
 
-// Position is expressed LOCAL to the slot's own box (0,0 = box top-left).
-function centeredLocalPosition(img, boxW, boxH, zoom) {
-  const scale = baseCoverScale(img, boxW, boxH) * zoom;
-  const drawW = img.width * scale;
-  const drawH = img.height * scale;
-  return { dx: (boxW - drawW) / 2, dy: (boxH - drawH) / 2 };
+// The box used for computing zoom/pan — usually the same as the slot's full
+// render size, but a slot can override with a smaller coverW/coverH (see the
+// ستوري slot above) so the default framing/zoom isn't calibrated against
+// area that ends up invisible anyway.
+function coverDims(config) {
+  return { w: config.coverW || config.w, h: config.coverH || config.h };
+}
+
+// Computes the scale + draw position for an image in a slot, given the
+// current zoom and pan offsets. Scale is based on the (possibly smaller)
+// cover reference box, so a slot doesn't force more zoom than the visible
+// area actually needs. Vertical centering, though, falls back to the FULL
+// slot height whenever the image is already tall enough to cover it (which
+// is always true for the pre-cropped default photos) — otherwise an image
+// that exactly fits the full canvas would get needlessly shifted as if it
+// only had to fill the smaller cover box.
+function slotScale(slot) {
+  const { w, h } = coverDims(slot.config);
+  return baseCoverScale(slot.img, w, h) * slot.state.zoom;
+}
+
+function centeredPosition(slot, zoom) {
+  const { w: fullW, h: fullH } = slot.config;
+  const cover = coverDims(slot.config);
+  const scale = baseCoverScale(slot.img, cover.w, cover.h) * zoom;
+  const drawW = slot.img.width * scale;
+  const drawH = slot.img.height * scale;
+  const dx = (fullW - drawW) / 2;
+  const dy = drawH >= fullH ? (fullH - drawH) / 2 : (cover.h - drawH) / 2;
+  return { dx, dy };
 }
 
 function clampSlotState(slot) {
-  const { w, h } = slot.config;
-  const scale = baseCoverScale(slot.img, w, h) * slot.state.zoom;
+  const { w: fullW, h: fullH } = slot.config;
+  const cover = coverDims(slot.config);
+  const scale = slotScale(slot);
   const drawW = slot.img.width * scale;
   const drawH = slot.img.height * scale;
-  const minDx = w - drawW; // <= 0
-  const minDy = h - drawH; // <= 0
+
+  const minDx = fullW - drawW; // <= 0
+  const minDy = drawH >= fullH ? fullH - drawH : cover.h - drawH; // <= 0
   slot.state.dx = Math.min(0, Math.max(minDx, slot.state.dx));
   slot.state.dy = Math.min(0, Math.max(minDy, slot.state.dy));
 }
@@ -157,7 +192,7 @@ function clampSlotState(slot) {
 function resetSlot(slot) {
   slot.state.zoom = 1;
   if (slot.img) {
-    const pos = centeredLocalPosition(slot.img, slot.config.w, slot.config.h, 1);
+    const pos = centeredPosition(slot, 1);
     slot.state.dx = pos.dx;
     slot.state.dy = pos.dy;
   } else {
@@ -171,14 +206,15 @@ function applyZoom(slot, newZoom) {
     slot.state.zoom = newZoom;
     return;
   }
-  const { w, h } = slot.config;
-  const oldScale = baseCoverScale(slot.img, w, h) * slot.state.zoom;
-  const cx = w / 2;
-  const cy = h / 2;
+  const oldScale = slotScale(slot);
+  const { w: fullW, h: fullH } = slot.config;
+  const cx = fullW / 2;
+  const cy = fullH / 2;
   const imgX = (cx - slot.state.dx) / oldScale;
   const imgY = (cy - slot.state.dy) / oldScale;
 
-  const newScale = baseCoverScale(slot.img, w, h) * newZoom;
+  const cover = coverDims(slot.config);
+  const newScale = baseCoverScale(slot.img, cover.w, cover.h) * newZoom;
   slot.state.zoom = newZoom;
   slot.state.dx = cx - imgX * newScale;
   slot.state.dy = cy - imgY * newScale;
@@ -200,10 +236,14 @@ function drawSlot(slot) {
   }
 
   clampSlotState(slot);
-  const scale = baseCoverScale(slot.img, w, h) * slot.state.zoom;
+  const scale = slotScale(slot);
   const drawW = slot.img.width * scale;
   const drawH = slot.img.height * scale;
 
+  // Clip to the FULL slot box (not just the smaller cover reference) so the
+  // image still extends as far as it naturally reaches — anything beyond
+  // the cover reference is fine to leave uncovered, since that area is
+  // always fully masked by the design's own opaque overlay on top.
   ctx.save();
   ctx.beginPath();
   ctx.rect(x, y, w, h);
