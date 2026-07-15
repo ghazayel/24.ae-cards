@@ -4,7 +4,7 @@
 // build is currently live (pairs well with the auto hard-refresh in
 // index.html, in case a visitor's browser/CDN is holding a stale copy).
 // ---------------------------------------------------------------------------
-const APP_VERSION = "2.0.3";
+const APP_VERSION = "2.0.4";
 
 // ---------------------------------------------------------------------------
 // Template definitions
@@ -28,7 +28,7 @@ const TEMPLATES = {
       { src: "assets/story_dodge2.png", mode: "color-dodge", alpha: 0.2314 }
     ],
     slots: [
-      { key: "main", x: 0, y: 0, w: 1080, h: 1330, defaultSrc: "assets/story_default_bg.jpg", label: null }
+      { key: "main", x: 0, y: 0, w: 1080, h: 1920, defaultSrc: "assets/story_default_bg.jpg", label: null }
     ],
     text: {
       x: 104, y: 1330, width: 997 - 104, height: 1800 - 1330,

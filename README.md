@@ -125,11 +125,14 @@ webapp/
 Everything renders on an HTML `<canvas>` in this order:
 
 1. **Photo slot(s)** — the uploaded (or default) photo, cover-fit and
-   clipped to its slot, with pan/zoom applied. Each slot only spans the area
-   where the photo is actually visible behind the overlay (e.g. in
-   **ستوري** and **بطاقة** the slot stops where the headline card begins,
-   not at the bottom of the canvas), so zooming/panning isn't wasted on
-   hidden area.
+   clipped to its slot, with pan/zoom applied. In **بطاقة**, the slot stops
+   where the headline card begins rather than the bottom of the canvas,
+   since the photo is already fully hidden by then — no need to
+   zoom/pan into area that will never show. **ستوري** and **اتصالات**
+   need the full slot size they're given: ستوري's fade is done with real
+   blend modes (see below) that require actual photo pixels the whole way
+   down to blend against correctly, and اتصالات's two slots are already
+   sized to exactly match their visible square.
 2. **Blend-mode layers** *(Story template only)* — a couple of design
    elements use Photoshop's Multiply/Color Dodge blend modes instead of plain
    transparency. These are drawn with the browser's native
